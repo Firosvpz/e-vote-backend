@@ -6,7 +6,7 @@ import Booking from '../models/bookingSchema.js';
 import { sendStatusUpdateEmail } from '../services/email.js';
 export const register = async (req, res) => {
   try {
-    console.log('body',req.body);
+    // console.log('body',req.body);
     const { name, email,phoneNumber, password } = req.body;
     
     
@@ -35,11 +35,11 @@ export const login = async (req, res) => {
 
     // check user
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ msg: 'Invalid credentials' });
+    if (!user) return res.status(400).json({ msg: 'Invalid email' });
 
     // check password
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ msg: 'Invalid credentials' });
+    if (!isMatch) return res.status(400).json({ msg: 'Wrong password ' });
 
     // sign token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
