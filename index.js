@@ -10,8 +10,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(
   cors({
-     origin: 'http://localhost:5173',
-    // origin: "https://aura-fits-frontend-16bj.vercel.app",
+    //  origin: 'http://localhost:5173',
+    origin: "https://aura-fits-frontend-16bj.vercel.app",
     credentials: true,
   }),
 );
