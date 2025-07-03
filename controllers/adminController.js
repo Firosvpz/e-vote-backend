@@ -31,7 +31,7 @@ export const adminLogin = async (req, res) => {
 export const getUsers = async (req, res) => {
   try {
     const users = await User.find({});
-  
+
     return res.status(200).json({
       msg: "Users fetched successfully",
       users: users.map((user) => ({
@@ -192,7 +192,7 @@ export const dashboardStats = async (req, res) => {
     const totalPlans = await Plan.countDocuments({});
     const totalBookings = await Booking.countDocuments({});
     const plans = await Plan.find({})
-    const bookings = await Booking.find({}).populate('userId' ,'name').populate('planId','planName price').sort({bookingDate:-1})
+    const bookings = await Booking.find({}).populate('userId', 'name').populate('planId', 'planName price').sort({ bookingDate: -1 })
 
 
     res.status(200).json({
@@ -205,9 +205,53 @@ export const dashboardStats = async (req, res) => {
         plans
       },
     });
-    
-    
+   
+
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+}
+
+export const editPlan = async (req, res) => {
+  try {
+    const { planId } = req.params
+    const { planName, description, price, type } = req.body
+
+    const updatePlan = await Plan.findByIdAndUpdate(planId, {
+      planName,
+      description,
+      price,
+      planType:type
+    },
+      { new: true }
+    )
+    if (!updatePlan) {
+      return res.status(404).json({ message: "Plan not found" });
+    }
+
+    // console.log('updatedPlan', updatePlan);
+
+    res.status(200).json({ message: "plan updated successfully" })
+
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ message: "An error occured while editing plan" })
+  }
+}
+
+export const deletePlan = async(req,res)=> {
+  try {
+    const{planId}=req.params
+    const deletePlan = await Plan.findByIdAndDelete(planId)
+    if (!deletePlan) {
+      return res.status(404).json({ message: "Plan not found" });
+    }
+
+    res.status(200).json({message:"plan deleted successfully"})
+
+  } catch (error) {
+    console.error(error);
+    re.status(500).json({message:"An error occurred while deleting the plan"})
+    
   }
 }
