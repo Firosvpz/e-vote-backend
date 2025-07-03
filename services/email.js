@@ -1,10 +1,17 @@
-import dotenv from "dotenv"
-import nodemailer from "nodemailer"
-dotenv.config()
+import dotenv from "dotenv";
+import nodemailer from "nodemailer";
+dotenv.config();
 
-export const sendStatusUpdateEmail = async (toEmail, status, planName, userName) => {
+export const sendStatusUpdateEmail = async (
+  toEmail,
+  status,
+  planName,
+  userName,
+) => {
   try {
-    console.log(`Sending ${status} email to ${toEmail} for plan: ${planName}, user: ${userName}`)
+    console.log(
+      `Sending ${status} email to ${toEmail} for plan: ${planName}, user: ${userName}`,
+    );
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -12,14 +19,14 @@ export const sendStatusUpdateEmail = async (toEmail, status, planName, userName)
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
-    })
+    });
 
     const subjectMap = {
       confirmed: "🎉 Your Booking is Confirmed!",
       pending: "⏳ Your Booking is Under Review",
       cancelled: "❌ Your Booking was Cancelled",
       completed: "✅ Booking Completed Successfully",
-    }
+    };
 
     // Modern HTML Email Template
     const getModernEmailHTML = (status, userName, planName) => {
@@ -28,16 +35,16 @@ export const sendStatusUpdateEmail = async (toEmail, status, planName, userName)
         pending: { color: "#F59E0B", bgColor: "#FFFBEB", icon: "⏳" },
         cancelled: { color: "#EF4444", bgColor: "#FEF2F2", icon: "❌" },
         completed: { color: "#8B5CF6", bgColor: "#F3E8FF", icon: "🎉" },
-      }
+      };
 
-      const config = statusConfig[status] || statusConfig.pending
+      const config = statusConfig[status] || statusConfig.pending;
 
       const messages = {
         confirmed: `Great news! Your booking for the <strong>"${planName}"</strong> plan has been <span style="color: ${config.color}; font-weight: bold;">confirmed</span>! You now have full access to all plan benefits.`,
         pending: `Your booking for the <strong>"${planName}"</strong> plan is currently <span style="color: ${config.color}; font-weight: bold;">under review</span>. We'll notify you once processed (typically 1-2 business days).`,
         cancelled: `Your booking for the <strong>"${planName}"</strong> plan has been <span style="color: ${config.color}; font-weight: bold;">cancelled</span>. You can rebook anytime if needed.`,
         completed: `Your booking for the <strong>"${planName}"</strong> plan has been <span style="color: ${config.color}; font-weight: bold;">completed</span>! Thank you for choosing our service.`,
-      }
+      };
 
       return `
 <!DOCTYPE html>
@@ -138,19 +145,19 @@ export const sendStatusUpdateEmail = async (toEmail, status, planName, userName)
         </tr>
     </table>
 </body>
-</html>`
-    }
+</html>`;
+    };
 
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: toEmail,
       subject: subjectMap[status] || "Booking Status Updated",
       html: getModernEmailHTML(status, userName, planName),
-    }
+    };
 
-    await transporter.sendMail(mailOptions)
-    console.log(`Modern ${status} email sent successfully to ${toEmail}`)
+    await transporter.sendMail(mailOptions);
+    console.log(`Modern ${status} email sent successfully to ${toEmail}`);
   } catch (error) {
-    console.error("Email send error:", error.message)
+    console.error("Email send error:", error.message);
   }
-}
+};

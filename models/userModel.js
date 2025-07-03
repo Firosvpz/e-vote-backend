@@ -8,7 +8,6 @@
 
 // module.exports = mongoose.model('User', userSchema);
 
-
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
@@ -20,5 +19,5 @@ const userSchema = new mongoose.Schema({
   joinedAt: { type: Date, default: Date.now },
 });
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model("User", userSchema);
 export default User;
