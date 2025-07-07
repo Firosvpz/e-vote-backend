@@ -57,6 +57,11 @@ export const addPlan = async (req, res) => {
       return res.status(400).json({ msg: "All fields are required" });
     }
 
+    const planExists = await Plan.findOne({ planName: { $regex: `^${planName}$`, $options: "i" } });
+    if (planExists) {
+      return res.status(400).json({ msg: `${planName} already exists` });
+    }
+
     // Here you would typically save the plan to the database
     const savePlan = new Plan({
       // Assuming Plan is imported from models/planModel.js
@@ -103,6 +108,15 @@ export const getPlans = async (req, res) => {
         createdAt: plan.createdAt,
       })),
     });
+    console.table(plans.map((plan) => ({
+      // id: plan._id,
+      planName: plan.planName,
+      planType: plan.planType,
+      price: plan.price,
+      // description: plan.description,
+      // subscribers: plan.subscribers,
+      createdAt: plan.createdAt,
+    })))
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -187,7 +201,7 @@ export const updateBookingStatus = async (req, res) => {
 
 export const dashboardStats = async (req, res) => {
   try {
-    
+
     const totalUsers = await User.countDocuments({});
     const totalPlans = await Plan.countDocuments({});
     const totalBookings = await Booking.countDocuments({});
@@ -205,7 +219,7 @@ export const dashboardStats = async (req, res) => {
         plans
       },
     });
-   
+
 
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -214,14 +228,25 @@ export const dashboardStats = async (req, res) => {
 
 export const editPlan = async (req, res) => {
   try {
+    // console.log('planId:', req.params.planId);
+
     const { planId } = req.params
+    if (!planId) {
+      return res.status(400).json({ message: "Plan ID is required" });
+    }
     const { planName, description, price, type } = req.body
+
+
+    const planExists = await Plan.findOne({ planName: { $regex: `^${planName}$`, $options: "i" }, _id: { $ne: planId } });
+    if (planExists) {
+      return res.status(400).json({ msg: `${planName} already exists` });
+    }
 
     const updatePlan = await Plan.findByIdAndUpdate(planId, {
       planName,
       description,
       price,
-      planType:type
+      planType: type
     },
       { new: true }
     )
@@ -239,19 +264,19 @@ export const editPlan = async (req, res) => {
   }
 }
 
-export const deletePlan = async(req,res)=> {
+export const deletePlan = async (req, res) => {
   try {
-    const{planId}=req.params
+    const { planId } = req.params
     const deletePlan = await Plan.findByIdAndDelete(planId)
     if (!deletePlan) {
       return res.status(404).json({ message: "Plan not found" });
     }
 
-    res.status(200).json({message:"plan deleted successfully"})
+    res.status(200).json({ message: "plan deleted successfully" })
 
   } catch (error) {
     console.error(error);
-    re.status(500).json({message:"An error occurred while deleting the plan"})
-    
+    res.status(500).json({ message: "An error occurred while deleting the plan" })
+
   }
 }
