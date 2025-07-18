@@ -13,7 +13,8 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 app.use(
   cors({
-    origin: 'http://localhost:5173',
+    // origin: 'http://localhost:5173',
+    origin:'https://e-vote-frontend.vercel.app/api',
     credentials: true,
   }),
 );
@@ -32,6 +33,6 @@ app.use("/api/admin", adminRoutes);
 
 app.listen(PORT, () => {
   console.log(
-    `Server started on port http://localhost:5173`,
+    `Server started on port https://e-vote-frontend.vercel.app/`,
   );
 });
