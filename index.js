@@ -28,7 +28,7 @@ app.use("/api", userRoutes);
 app.use("/api/admin", adminRoutes);
 
 app.listen(PORT, () => {
-  console.log(
-    `Server started on port https://e-vote-frontend.vercel.app/`,
-  );
+ 
+    console.log(`Server started on port ${PORT}`);
+
 });
