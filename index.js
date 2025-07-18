@@ -5,8 +5,7 @@ import userRoutes from "./src/routes/userRoutes.js";
 import adminRoutes from "./src/routes/adminRoutes.js";
 import cors from "cors";
 dotenv.config();
-import path from 'path';
-import { fileURLToPath } from 'url';
+
 
 
 const app = express();
@@ -14,7 +13,7 @@ const PORT = process.env.PORT || 5000;
 app.use(
   cors({
     // origin: 'http://localhost:5173',
-    origin:'https://e-vote-frontend.vercel.app/api',
+    origin:'https://e-vote-frontend.vercel.app',
     credentials: true,
   }),
 );
@@ -24,10 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 
 connectDB();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use("/api", userRoutes);
 app.use("/api/admin", adminRoutes);
 
