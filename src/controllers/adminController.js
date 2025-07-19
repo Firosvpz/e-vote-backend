@@ -1,3 +1,4 @@
+import Candidate from "../models/candidateModel.js";
 import Election from "../models/electionModel.js";
 import User from "../models/userModel.js";
 import bcrypt from "bcryptjs";
@@ -7,7 +8,7 @@ import jwt from "jsonwebtoken";
 // This is a simple admin login that checks against environment variables for email and password.
 export const adminLogin = async (req, res) => {
   try {
-   
+
     const { email, password } = req.body;
     const adminEmail = process.env.ADMIN;
     const adminPassword = process.env.ADMIN_PASSWORD;
@@ -168,11 +169,16 @@ export const dashboard = async (req, res) => {
 
     //  Total votes (depends on how votes are stored)
     const totalVotes = allElections.reduce((sum, election) => sum + (election.totalVotes || 0), 0)
+   
+    const allCandidates = await Candidate.find({});
+
 
     res.status(200).json({
       totalUsers,
       verifiedUsers,
+      allElections,
       unverifiedUsers,
+      allCandidates,
       activeElections,
       totalVotes,
     })

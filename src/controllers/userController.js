@@ -165,32 +165,35 @@ export const pollVote = async (req, res) => {
     const toEmail = req.user.email
     const userName = req.user.name
 
-    // console.log(electionId,candidateId,voterId);
 
 
-    // Step 1: Verify the election exists
+
     const election = await Election.findById(electionId).populate("candidates");
     if (!election) return res.status(404).json({ message: "Election not found" });
 
-    // Step 2: Check if the candidate is part of this election
+
     const candidateExists = election.candidates.find(
       (candidate) => candidate._id.toString() === candidateId
     );
     if (!candidateExists)
       return res.status(400).json({ message: "Candidate does not belong to this election" });
 
-    // Step 3: Check if user already voted in this election (optional logic)
+
     const existingVote = await Vote.findOne({ election: electionId, voter: voterId });
     if (existingVote) return res.status(400).json({ message: "You have already voted" });
 
-    // Step 4: Save vote to DB
+    const user = await User.findById(voterId);
+    if (!user?.isVerified) {
+      return res.status(400).json({ message: "Only verified users can participate in the election" });
+    }
+
     await Vote.create({
       election: electionId,
       voter: voterId,
       candidate: candidateId,
     });
 
-    // Step 5: Increment vote counts
+
     const updatedCandidate = await Candidate.findByIdAndUpdate(
       candidateId,
       { $inc: { votes: 1 } },
@@ -219,7 +222,7 @@ export const pollVote = async (req, res) => {
       selectedOption: candidateExists.name,
       receiptId: receiptId,
     }, userName);
-    
+
 
     return res.status(200).json({
       message: "Vote submitted successfully",
